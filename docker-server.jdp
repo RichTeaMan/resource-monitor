@@ -1,0 +1,17 @@
+pipeline {
+    agent { label "linux" }
+    
+    stages {
+        stage('Build image') { 
+            steps {
+                sh "sudo docker build -t resource-monitor ."
+            }
+        }
+        stage('Build run container') { 
+            steps {
+                sh (script: "sudo docker rm --force resource-monitor", returnStatus: true)
+                sh "sudo docker run -d --name resource-monitor -p 5004:5002 --restart unless-stopped resource-monitor"
+            }
+        }
+    }
+}
